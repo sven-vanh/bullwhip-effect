@@ -1,0 +1,36 @@
+---
+title: "Exploring the Bullwhip Effect"
+subtitle: "Rational Decision-Making in Irrational Supply Chains"
+author: "Sven van Helten"
+date: today
+format:
+  html:
+    theme: litera
+    toc: true
+    toc-depth: 3
+    code-fold: false
+    code-tools: true
+    html-math-method: katex
+---
+
+## Introduction
+
+Why do stockouts happen during a slight change in customer demand? Why do perfectly rational people go crazy in a supply chain? The answer is usually the bullwhip effect. First demonstrated by Forrester's (1961) deceptively simple Beer Distribution Game, this effect arises from a compounding of demand fluctuations throughout a supply chain. Take, for instance, a simple three-step chain of a retailer, wholesaler, and supplier. The retailer sees a slight bump in demand and increases their order to the wholesaler by a bit more to maintain safety stock. The wholesaler now sees a tangibly larger increase in supply and overorders to the supplier to maintain their own inventory levels. The supplier is consequently faced with a disproportional increase in demand.
+
+The vast majority of the bullwhip effect comes from four key operational constraints. The first of these is information degradation. Much like the children's telephone game, the demand information becomes distorted as it travels up the supply chain. In our earlier toy example, retailers are the only ones to directly observe demand; wholesalers and suppliers only see the information passed on from the stage before them with no indication of what the actual end customer is doing.
+
+The second cause of the bullwhip effect is order batching. With the exception of Zara and some other industry lighthouses, most firms are not directly linked to their supply chain partners and, therefore, cannot place orders continuously. Most firms schedule orders at fixed intervals (e.g., weekly or monthly) and place a single large order at the end of the period. This generally requires higher levels of safety stock and further increases order volatility.
+
+Somewhat relatedly, long and potentially uncertain lead times further exacerbate the bullwhip effect. If a shipment takes four weeks to arrive, the firm needs to forecast what they think demand will be when the order arrives. With uncertain real-world demand, this often results in either poor forecasts and subsequent panic-buying or a larger safety stock to account for prediction errors and unexpected demand fluctuations. Either way, each firm propagates more volatility through their upstream supply chain.
+
+Finally, price fluctuations and promotion-induced ordering play a key role. Contrary to the other factors, this is increases demand-side not supply-side volatility. Even with stable demand, suddenly slashing prices or offering promotions can lead to a surge in demand far above normal baseline levels. As a result, retailers introduce their own volatility in the supply chain. 
+
+### The Beer Game
+
+The bullwhip effect was first demonstrated through a simple beer distribution game. The premise was simple: participants (usually hapless undergraduate students) manage a four-stage supply chain consisting of a retailer, a distributor, a wholesaler, and a manufacturer. The lead times are generally fixed at two to four weeks and demand is stochastic, with a single large bump after a few simulated weeks. Despite its relative fame, the game never fails to generate bullwhip effects with a 2-5x demand variability multiplier.
+
+By eliminating many of the operational constraints -- apart from information degradation -- the beer game exposes the psychological factors that further worsen a supply chain's response to dynamic demand. Researchers consistently find that participants frequently over-adjust to changes in the demand level. For instance, if demand increases by 10%, participants feel the need to build up a larger amount of safety stock to hedge against further demand increases, thereby potentially order 20-30%. 
+
+This feeds into an oscillating behaviour. When the over-ordered stock finally comes in after the lead time, retailers find they have too much stock and under-order to reduce their excess inventory levels. As the game progresses, this oscillation between over- and under-ordering can create fluctuations in the supply chain even without changes in underlying customer demand levels.
+
+Finally, many participants suffer from loss aversion and an ignorance of their current supply line position. 
