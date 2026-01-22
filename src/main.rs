@@ -8,7 +8,7 @@ use crate::io::reporting;
 use crate::simulation::config::SimulationConfig;
 use crate::simulation::engine::ChainSimulation;
 use crate::strategy::implementations::{
-    BaseStockPolicy, NaivePolicy, RandomPolicy, SmoothingPolicy, StermanHeuristic,
+    BaseStockPolicy, NaivePolicy, RandomPolicy, SmoothingPolicy, StermanHeuristic, VMIPolicy,
 };
 use crate::strategy::traits::OrderPolicy;
 use std::env;
@@ -22,6 +22,8 @@ fn main() {
         order_delay: 2,
         shipment_delay: 2,
         initial_inventory: 15, // Standard starting inventory
+        holding_cost: 0.5,
+        backlog_cost: 1.0,
     };
 
     // 2. GENERATE DEMAND
@@ -45,21 +47,51 @@ fn main() {
 
     // Scenario B: One Rational Agent
     // the rest are acting using a heuristic
-    let strategies: Vec<Box<dyn OrderPolicy>> = vec![
-        Box::new(BaseStockPolicy::new(15)), // Retailer
-        Box::new(NaivePolicy::new()),       // Wholesaler
-        Box::new(NaivePolicy::new()),       // Distributor
-        Box::new(NaivePolicy::new()),       // Manufacturer
-    ];
+    // let strategies: Vec<Box<dyn OrderPolicy>> = vec![
+    //     Box::new(BaseStockPolicy::new(15)), // Retailer
+    //     Box::new(NaivePolicy::new()),       // Wholesaler
+    //     Box::new(NaivePolicy::new()),       // Distributor
+    //     Box::new(NaivePolicy::new()),       // Manufacturer
+    // ];
 
-    /* // Scenario C: Chaos (Mixed Agents)
+    // Scenario C: Chaos (Mixed Agents)
+    // let strategies: Vec<Box<dyn OrderPolicy>> = vec![
+    //     Box::new(NaivePolicy::new()),       // Retailer just panics
+    //     Box::new(BaseStockPolicy::new(20)), // Wholesaler hoards
+    //     Box::new(RandomPolicy::new(0, 15)), // Distributor is drunk
+    //     Box::new(BaseStockPolicy::new(15)), // Manufacturer is rational
+    // ];
+
+    // Scenario D: VMI at Wholesaler Level
+    // Wholesaler uses VMI to monitor Retailer's inventory and replenish optimally
+    // This should reduce bullwhip effect between Retailer and Wholesaler
+    // let strategies: Vec<Box<dyn OrderPolicy>> = vec![
+    //     Box::new(BaseStockPolicy::new(15)), // Retailer
+    //     Box::new(VMIPolicy::new(15)),       // Wholesaler uses VMI
+    //     Box::new(NaivePolicy::new()),       // Distributor
+    //     Box::new(NaivePolicy::new()),       // Manufacturer
+    // ];
+
+    // Scenario E: Full VMI Supply Chain
+    // All upstream agents use VMI to monitor downstream inventory
+    // This should minimize the bullwhip effect across the entire chain
+    // let strategies: Vec<Box<dyn OrderPolicy>> = vec![
+    //     Box::new(BaseStockPolicy::new(20)), // Retailer (end customer interface)
+    //     Box::new(VMIPolicy::new(20)),       // Wholesaler uses VMI
+    //     Box::new(VMIPolicy::new(20)),       // Distributor uses VMI
+    //     Box::new(VMIPolicy::new(20)),       // Manufacturer uses VMI
+    // ];
+
+    // Scenario F: Optimized Rational Agents
+    // Using the Newsvendor model to calculate optimal base stock levels
+    // based on cost structure (holding vs backlog) and demand characteristics.
+    // We assume agents anticipate demand of 8 with some variance (std_dev=2.0).
     let strategies: Vec<Box<dyn OrderPolicy>> = vec![
-        Box::new(NaivePolicy),                 // Retailer just panics
-        Box::new(BaseStockPolicy::new(20)),    // Wholesaler hoards
-        Box::new(RandomPolicy::new(0, 15)),    // Distributor is drunk
-        Box::new(BaseStockPolicy::new(15)),    // Manufacturer is rational
+        Box::new(BaseStockPolicy::with_optimal_target(&config, 8.0, 2.0)), // Retailer
+        Box::new(BaseStockPolicy::with_optimal_target(&config, 8.0, 2.0)), // Wholesaler
+        Box::new(BaseStockPolicy::with_optimal_target(&config, 8.0, 2.0)), // Distributor
+        Box::new(BaseStockPolicy::with_optimal_target(&config, 8.0, 2.0)), // Manufacturer
     ];
-    */
 
     // 4. INITIALIZE SIMULATION
     let mut sim = ChainSimulation::new(config, demand_schedule, strategies);

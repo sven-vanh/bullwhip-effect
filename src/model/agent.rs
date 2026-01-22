@@ -1,7 +1,7 @@
 use serde::Serialize;
 // We assume the strategy trait is defined here.
 // You will create this file in the next step.
-use crate::strategy::traits::OrderPolicy;
+use crate::strategy::traits::{OrderContext, OrderPolicy};
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize)]
 pub enum AgentRole {
@@ -92,13 +92,14 @@ impl SupplyChainAgent {
     /// Step 3: Run the AI Strategy to decide what to order from upstream.
     ///
     /// Returns the quantity to order.
-    pub fn make_decision(&mut self) -> u32 {
+    pub fn make_decision(&mut self, context: &OrderContext) -> u32 {
         // The policy looks at the state and makes a decision
         let order_qty = self.policy.calculate_order(
             self.inventory,
             self.backlog,
             self.last_order_received,
             self.supply_line,
+            context,
         );
 
         // Increase supply line by the amount we just ordered

@@ -3,7 +3,7 @@
 use crate::model::agent::{AgentRole, SupplyChainAgent};
 use crate::model::queues::TimeDelayQueue;
 use crate::simulation::config::SimulationConfig;
-use crate::strategy::traits::OrderPolicy;
+use crate::strategy::traits::{OrderContext, OrderPolicy};
 use serde::Serialize;
 
 // We make this Serialize so we can write it to CSV later
@@ -144,10 +144,35 @@ impl ChainSimulation {
         let m_shipped = self.agents[3].process_order(m_incoming_order);
 
         // 3. Make Decisions (Calculate next order)
-        let r_order = self.agents[0].make_decision();
-        let w_order = self.agents[1].make_decision();
-        let d_order = self.agents[2].make_decision();
-        let m_order = self.agents[3].make_decision();
+        // Build context for each agent with downstream visibility
+        let r_context = OrderContext {
+            downstream_inventory: None, // Retailer has no downstream agent
+            downstream_backlog: None,
+            actual_customer_demand: Some(customer_demand),
+        };
+
+        let w_context = OrderContext {
+            downstream_inventory: Some(self.agents[0].inventory), // Retailer
+            downstream_backlog: Some(self.agents[0].backlog),
+            actual_customer_demand: Some(customer_demand),
+        };
+
+        let d_context = OrderContext {
+            downstream_inventory: Some(self.agents[1].inventory), // Wholesaler
+            downstream_backlog: Some(self.agents[1].backlog),
+            actual_customer_demand: Some(customer_demand),
+        };
+
+        let m_context = OrderContext {
+            downstream_inventory: Some(self.agents[2].inventory), // Distributor
+            downstream_backlog: Some(self.agents[2].backlog),
+            actual_customer_demand: Some(customer_demand),
+        };
+
+        let r_order = self.agents[0].make_decision(&r_context);
+        let w_order = self.agents[1].make_decision(&w_context);
+        let d_order = self.agents[2].make_decision(&d_context);
+        let m_order = self.agents[3].make_decision(&m_context);
 
         // =================================================================
         // PHASE 3: EVENING (Departures)
